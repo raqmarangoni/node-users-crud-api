@@ -1,5 +1,5 @@
-import { IGetUsersRepository } from "../../controllers/get-users/protocols"
-import { User } from "../../models/users"
+import { IGetUsersRepository } from "../../controllers/get-users/protocols";
+import { User } from "../../models/users";
 
 export class MongoGetUsersRepository implements IGetUsersRepository {
   async getUsers(): Promise<User[]> {
@@ -8,8 +8,8 @@ export class MongoGetUsersRepository implements IGetUsersRepository {
         firstName: "Raquel",
         lastName: "Marangoni",
         email: "raquel@mail.com",
-        password: "123"
-      }
-    ])
+        password: "123",
+      },
+    ]);
   }
 }
