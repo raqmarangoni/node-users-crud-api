@@ -1,0 +1,20 @@
+{
+  "name": "users-crud-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start:dev": "nodemon --watch 'src' --exec 'ts-node src/server.ts' -e ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "tsc": "^2.0.4"
+  },
+  "dependencies": {
+    "typescript": "^5.7.2"
+  },
+  "description": ""
+}
