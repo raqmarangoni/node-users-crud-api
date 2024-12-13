@@ -14,6 +14,10 @@ export interface CreateUserParams {
   password: string;
 }
 
+export interface IUpdateUserController {
+  handle(httpRequest: httpRequest<unknown>): Promise<HttpResponse<User>>;
+}
+
 export interface ICreateUserRepository {
   createUser(params: CreateUserParams): Promise<User>;
 }
