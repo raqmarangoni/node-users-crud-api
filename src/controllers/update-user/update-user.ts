@@ -51,7 +51,7 @@ export class UpdateUserController implements IUpdateUserController {
       );
   
       return {
-        statusCode: 200,
+        statusCode: 204,
         body: user,
       };
     } catch (error) {
