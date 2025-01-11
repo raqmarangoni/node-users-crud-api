@@ -9,19 +9,23 @@ import { MongoUpdateUserRepository } from "./repositories/update-user/mongo-upda
 import { UpdateUserController } from "./controllers/update-user/update-user";
 import { MongoDeleteUserRepository } from "./repositories/delete-user/mongo-delete-user";
 import { DeleteUserController } from "./controllers/delete-user/delete-user";
+import Redis from "ioredis";
+
+const redisClient = new Redis({
+  host: "localhost",
+  port: 6379,
+});
+
+redisClient.on("connect", () => console.log("Conectado ao Redis com ioredis!"));
+redisClient.on("error", (err) =>
+  console.error("Erro ao conectar ao Redis:", err)
+);
 
 const main = async () => {
   config();
   const app = express();
   app.use(express.json());
   await MongoClient.connect();
-
-  app.get("/users", async (_, res) => {
-    const mongoGetUsersRepository = new MongoGetUsersRepository();
-    const getUsersController = new GetUsersController(mongoGetUsersRepository);
-    const { body, statusCode } = await getUsersController.handle();
-    res.json(body).status(statusCode);
-  });
 
   app.post("/users", async (req, res) => {
     const mongoCreateUserRepository = new MongoCreateUserRepository();
@@ -32,6 +36,31 @@ const main = async () => {
       body: req.body,
     });
     res.status(statusCode).json(body);
+  });
+
+  app.get("/users", async (req, res) => {
+    const cacheKey = "users";
+    try {
+      const cachedUsers = await redisClient.get(cacheKey);
+      if (cachedUsers) {
+        const users = JSON.parse(cachedUsers);
+        res.status(200).json(users);
+        return
+      }
+      const mongoGetUsersRepository = new MongoGetUsersRepository();
+      const getUsersController = new GetUsersController(
+        mongoGetUsersRepository
+      );
+      const { body, statusCode } = await getUsersController.handle();
+      console.log(body)
+      if (statusCode === 200) {
+        await redisClient.setex(cacheKey, 5, JSON.stringify(body));
+      }
+      res.status(statusCode).json(body);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json("Erro ao encontrar lista de usuários");
+    }
   });
 
   app.patch("/users/:id", async (req, res) => {
